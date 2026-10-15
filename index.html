@@ -408,8 +408,8 @@ textarea{width:100%;min-height:130px;border:1px solid var(--rule);background:var
 
 <script>
 /* ---------- constants ---------- */
-const TYPES=["Bucket - Dig","Bucket - Ditch/Grading","Bucket - Skeleton","Bucket - Rock","Bucket - Pavement removal","Bucket - Backhoe","Bucket - Trench","Bucket - Tilt","Concrete bucket","Clamshell bucket","Loader bucket","Side dump bucket","Hammer","Vibro hammer","Power pack","Concrete cracker","Grapple","Auger","Forks","Material handling arm","Long front","Rake","Stinger/Ripper","Thumb","Compaction Plate","Coupler","Trailer","Other"];
-const MTYPES=["Excavator","Wheel loader","Telehandler","Backhoe","Skid steer","Other"];
+const TYPES=["Bucket - Dig","Bucket - Ditch/Grading","Bucket - Skeleton","Bucket - Rock","Bucket - Pavement removal","Bucket - Backhoe","Bucket - Trench","Bucket - Tilt","Concrete bucket","Clamshell bucket","Loader bucket","Side dump bucket","Hammer","Vibro hammer","Pile / drop hammer","Power pack","Concrete cracker","Grapple","Auger","Forks","Material handling arm","Long front","Rake","Stinger/Ripper","Thumb","Compaction Plate","Coupler","Trailer","Other"];
+const MTYPES=["Excavator","Wheel loader","Telehandler","Crane","Backhoe","Skid steer","Other"];
 const CLASSES={"Mini":.6,"Compact":.72,"Mid-size":.85,"Large":.95,"Heavy":1};
 const FILTERS=[["all","All"],["bucket","Buckets"],["lbucket","Loader buckets"],["hammer","Hammers"],["forks","Forks & arms"],["other","Other"]];
 function grp(k){return k==="bucket"?"bucket":k==="lbucket"?"lbucket":(k==="hammer"||k==="vibro")?"hammer":(k==="forks"||k==="arm")?"forks":"other"}
@@ -437,7 +437,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const num=v=>{const n=parseFloat(String(v??"").replace(/,/g,""));return isNaN(n)?null:n};
 const range=v=>{const m=String(v??"").replace(/,/g,"").match(/(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)/);if(m)return[+m[1],+m[2]];const n=num(v);return n==null?null:[n,n]};
 function kind(t){t=String(t||"").toLowerCase();
- if(/auger/.test(t))return"auger";if(/power pack/.test(t))return"other";if(/vibro/.test(t))return"vibro";if(/hammer|breaker/.test(t))return"hammer";if(/cracker|crusher|shear|pulver/.test(t))return"cracker";
+ if(/auger/.test(t))return"auger";if(/power pack|pile|drop hammer/.test(t))return"other";if(/vibro/.test(t))return"vibro";if(/hammer|breaker/.test(t))return"hammer";if(/cracker|crusher|shear|pulver/.test(t))return"cracker";
  if(/grapple|clamshell/.test(t))return"grapple";if(/fork/.test(t))return"forks";if(/handling arm|mat\.? handling|jib/.test(t))return"arm";if(/long front/.test(t))return"front";if(/trailer/.test(t))return"trailer";
  if(/ripper|stinger/.test(t))return"ripper";if(/thumb/.test(t))return"thumb";
  if(/(bucket|bkt)/.test(t)&&/side dump|loader|skid steer|g\/p|\bgp\b|cubic yard/.test(t))return"lbucket";
@@ -450,7 +450,7 @@ function guessType(text){const k=kind(text);const s=String(text||"").toLowerCase
 function sizeClass(w){w=num(w);if(w==null)return{k:"?",l:"Size not set",s:.8};if(w<13000)return{k:"mini",l:"Mini",s:.6};if(w<30000)return{k:"compact",l:"Compact",s:.72};if(w<60000)return{k:"mid",l:"Mid-size",s:.85};if(w<100000)return{k:"large",l:"Large",s:.95};return{k:"xl",l:"Heavy",s:1}}
 function mSize(m){if(m&&m.cls&&CLASSES[m.cls])return{k:m.cls,l:m.cls,s:CLASSES[m.cls]};return sizeClass(m&&m.weight)}
 function machineArt(m,tool="bucket",scale){m=m||{};const sc=scale??mSize(m).s;const t=String(m.mtype||"Excavator").toLowerCase();const label=mLabel(m);
- if(/loader|backhoe|skid/.test(t))return loaderSVG(sc,label);if(/tele/.test(t))return teleSVG(sc,label);return iron(tool,sc,label)}
+ if(/loader|backhoe|skid/.test(t))return loaderSVG(sc,label);if(/tele/.test(t))return teleSVG(sc,label);if(/crane/.test(t))return craneSVG(sc,label);return iron(tool,sc,label)}
 function wrapArt(sc,label,inner){return `<svg class="iron" viewBox="0 0 360 214" role="img" aria-label="${esc(label)}"><ellipse cx="180" cy="208" rx="${150*sc}" ry="4" class="shadow"/><g transform="translate(20 206) scale(${sc}) translate(-20 -206)">${inner}</g></svg>`}
 function wheel(cx,cy,r){return `<circle cx="${cx}" cy="${cy}" r="${r}" class="trk"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--steel-2)" stroke-width="3" stroke-dasharray="3 5"/><circle cx="${cx}" cy="${cy}" r="${r*.5}" class="trk-in"/><circle cx="${cx}" cy="${cy}" r="${r*.18}" class="dk"/>`}
 function loaderSVG(sc,label){return wrapArt(sc,label,`
@@ -464,6 +464,20 @@ function loaderSVG(sc,label){return wrapArt(sc,label,`
  <path d="M206 118 L300 140 L300 154 L202 132 Z" class="body"/>
  <line x1="222" y1="150" x2="292" y2="126" class="cyl"/>
  <path d="M292 112 L332 110 Q348 150 338 190 L288 192 Q280 160 292 112 Z" class="tool"/><line x1="288" y1="192" x2="340" y2="190" stroke="var(--steel)" stroke-width="4"/>`)}
+function craneSVG(sc,label){return wrapArt(sc,label,`
+ <rect x="40" y="172" width="170" height="32" rx="16" class="trk"/><rect x="48" y="178" width="154" height="20" rx="10" class="trk-in"/>
+ ${[66,96,126,156,186].map(x=>`<circle cx="${x}" cy="188" r="6" class="roll"/>`).join("")}
+ <rect x="96" y="160" width="58" height="14" class="dk"/>
+ <rect x="44" y="124" width="26" height="38" rx="3" class="body2"/>
+ <rect x="62" y="120" width="128" height="42" rx="3" class="body"/>
+ <rect x="62" y="140" width="128" height="7" class="stripe"/>
+ <rect x="150" y="94" width="38" height="44" rx="4" class="body"/><path d="M156 100 L182 100 L182 128 L156 128 Z" class="glass"/>
+ <rect x="84" y="98" width="8" height="24" class="dk"/>
+ <path d="M172 136 L330 22 M184 144 L338 30" stroke="var(--iron)" stroke-width="4" fill="none"/>
+ <path d="M172 136 L184 144 L196 127 L207 135 L219 118 L230 126 L242 109 L253 117 L265 100 L276 108 L288 91 L299 99 L311 82 L322 90 L330 22" stroke="var(--iron)" stroke-width="2" fill="none" opacity=".8"/>
+ <path d="M88 100 L332 24" stroke="var(--steel-2)" stroke-width="1.5"/>
+ <line x1="334" y1="28" x2="334" y2="140" stroke="var(--steel-2)" stroke-width="2"/>
+ <rect x="326" y="140" width="16" height="16" rx="2" class="dk"/><path d="M334 156 q0 12 -8 10" stroke="var(--steel)" stroke-width="3" fill="none"/>`)}
 function teleSVG(sc,label){return wrapArt(sc,label,`
  <rect x="52" y="146" width="236" height="22" rx="4" class="body"/>
  <rect x="52" y="154" width="236" height="5" class="stripe"/>
