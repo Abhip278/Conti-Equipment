@@ -408,7 +408,7 @@ textarea{width:100%;min-height:130px;border:1px solid var(--rule);background:var
 
 <script>
 /* ---------- constants ---------- */
-const TYPES=["Bucket - Dig","Bucket - Ditch/Grading","Bucket - Skeleton","Bucket - Rock","Bucket - Pavement removal","Bucket - Backhoe","Bucket - Trench","Bucket - Tilt","Concrete bucket","Clamshell bucket","Loader bucket","Side dump bucket","Hammer","Vibro hammer","Concrete cracker","Grapple","Auger","Forks","Material handling arm","Long front","Rake","Stinger/Ripper","Thumb","Compaction Plate","Coupler","Trailer","Other"];
+const TYPES=["Bucket - Dig","Bucket - Ditch/Grading","Bucket - Skeleton","Bucket - Rock","Bucket - Pavement removal","Bucket - Backhoe","Bucket - Trench","Bucket - Tilt","Concrete bucket","Clamshell bucket","Loader bucket","Side dump bucket","Hammer","Vibro hammer","Power pack","Concrete cracker","Grapple","Auger","Forks","Material handling arm","Long front","Rake","Stinger/Ripper","Thumb","Compaction Plate","Coupler","Trailer","Other"];
 const MTYPES=["Excavator","Wheel loader","Telehandler","Backhoe","Skid steer","Other"];
 const CLASSES={"Mini":.6,"Compact":.72,"Mid-size":.85,"Large":.95,"Heavy":1};
 const FILTERS=[["all","All"],["bucket","Buckets"],["lbucket","Loader buckets"],["hammer","Hammers"],["forks","Forks & arms"],["other","Other"]];
@@ -437,7 +437,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const num=v=>{const n=parseFloat(String(v??"").replace(/,/g,""));return isNaN(n)?null:n};
 const range=v=>{const m=String(v??"").replace(/,/g,"").match(/(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)/);if(m)return[+m[1],+m[2]];const n=num(v);return n==null?null:[n,n]};
 function kind(t){t=String(t||"").toLowerCase();
- if(/auger/.test(t))return"auger";if(/vibro/.test(t))return"vibro";if(/hammer|breaker/.test(t))return"hammer";if(/cracker|crusher|shear|pulver/.test(t))return"cracker";
+ if(/auger/.test(t))return"auger";if(/power pack/.test(t))return"other";if(/vibro/.test(t))return"vibro";if(/hammer|breaker/.test(t))return"hammer";if(/cracker|crusher|shear|pulver/.test(t))return"cracker";
  if(/grapple|clamshell/.test(t))return"grapple";if(/fork/.test(t))return"forks";if(/handling arm|mat\.? handling|jib/.test(t))return"arm";if(/long front/.test(t))return"front";if(/trailer/.test(t))return"trailer";
  if(/ripper|stinger/.test(t))return"ripper";if(/thumb/.test(t))return"thumb";
  if(/(bucket|bkt)/.test(t)&&/side dump|loader|skid steer|g\/p|\bgp\b|cubic yard/.test(t))return"lbucket";
